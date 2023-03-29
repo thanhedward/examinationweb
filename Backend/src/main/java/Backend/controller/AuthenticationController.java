@@ -2,6 +2,7 @@ package Backend.controller;
 
 import Backend.config.JwtUtils;
 import Backend.dto.LoginUser;
+import Backend.entity.User;
 import Backend.payload.JwtResponse;
 import Backend.service.UserDetailsImpl;
 import Backend.service.UserService;
@@ -21,7 +22,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:4200/")
@@ -45,18 +48,43 @@ public class AuthenticationController {
   @PostMapping("/signin")
   @Transactional
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginUser loginUser) {
-//
-//    Authentication authentication = authenticationManager.authenticate(
-//            new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword()));
-//
-//    SecurityContextHolder.getContext().setAuthentication(authentication);
-//    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-//    String jwt = jwtUtils.generateJwtToken(authentication);
-//    List<String> roles = userDetails.getAuthorities().stream()
-//            .map(item -> item.getAuthority())
-//            .collect(Collectors.toList());
-    List<String> roles = new ArrayList<>();
-    roles.add("user");
-    return ResponseEntity.ok(new JwtResponse("234l2ioj45", 35123441L, "thanh123", "ngocthanh123@gmail.com", roles));
+
+    String username = loginUser.getUsername();
+    Optional<User> user= userService.getUserByUsername(username);
+    if(!user.isPresent()){
+      return ResponseEntity.badRequest().build();
+    }
+    else if(user.get().isDeleted()==true){
+      return ResponseEntity.badRequest().build();
+    }
+
+    Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword()));
+
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    String jwt = jwtUtils.generateJwtToken(authentication);
+
+    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+    List<String> roles = userDetails.getAuthorities().stream()
+            .map(item -> item.getAuthority())
+            .collect(Collectors.toList());
+    User userLog = userService.getUserByUsername(userDetails.getUsername()).get();
+    userLog.setLastLoginDate(new Date());
+    userService.updateUser(userLog);
+    logger.warn(userLog.toString());
+    if (userLog.isDeleted() == true) {
+      return ResponseEntity.badRequest().build();
+    }
+    return ResponseEntity.ok(new JwtResponse(jwt,
+            userDetails.getId(),
+            userDetails.getUsername(),
+            userDetails.getEmail(),
+            roles));
+
+//        List<String> roles = new ArrayList<>();
+//    roles.add("ROLE_ADMIN");
+//    roles.add("ROLE_STUDENT");
+//    roles.add("ROLE_LECTURER");
+//    return ResponseEntity.ok(new JwtResponse("234l2ioj45", 35123441L, "thanhtam28ss", "ngocthanh123@gmail.com", roles));
   }
 }

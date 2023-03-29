@@ -57,7 +57,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .antMatchers("/api/test/**").permitAll()
 
-                .antMatchers("/api/**").authenticated()
+                .antMatchers("/api/**").permitAll() // .authenticated()
                 .anyRequest().permitAll();
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -65,11 +65,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //    @Override
 //    protected void configure(HttpSecurity http) throws Exception {
 //        http.cors().and().csrf().disable()
+//                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 //                .authorizeRequests().antMatchers("/api/auth/**", "/api/send-email").permitAll()
 //
 //                .antMatchers("/api/test/**").permitAll()
 //
-//                .antMatchers("/api/**").permitAll()
+//                .antMatchers("/api/**").authenticated()
 //                .anyRequest().permitAll();
 //
 //        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
