@@ -1,8 +1,6 @@
 package Backend.controller;
 
-import Backend.dto.PasswordUpdate;
-import Backend.dto.ServiceResult;
-import Backend.dto.UserExport;
+import Backend.dto.*;
 import Backend.entity.Profile;
 import Backend.entity.Role;
 import Backend.entity.User;
@@ -16,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +68,7 @@ public class UserController {
         }
         return ResponseEntity.ok(new ServiceResult(HttpStatus.OK.value(), "Lấy thông tin user " + username + " thành công!", user));
     }
+
     @GetMapping("/check-username")
     public boolean checkUsername(@RequestParam("value") String value) {
         return userService.existsByUsername(value);
@@ -75,6 +76,7 @@ public class UserController {
 
     @GetMapping("/check-email")
     public boolean checkEmail(@RequestParam("value") String value) {
+
         return userService.existsByEmail(value);
     }
 
@@ -90,19 +92,6 @@ public class UserController {
 //        userService.updateUser(user);
 //        return ResponseEntity.ok(new ServiceResult(HttpStatus.OK.value(), "Update email successfully", data.getEmail()));
 //    }
-
-
-    @GetMapping("/{id}/check-email")
-    public boolean checkExistsEmailUpdate(@RequestParam("value") String value, @PathVariable Long id) {
-        if (userService.existsByEmail(value)) {
-//            This is my email
-            if (userService.findUserById(id).get().getEmail().equals(value)) {
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
 
     @PatchMapping("/{id}/password/updating")
     public ResponseEntity updatePass(@Valid @RequestBody PasswordUpdate passwordUpdate, @PathVariable Long id) {
@@ -129,6 +118,18 @@ public class UserController {
         }
     }
 
+    @GetMapping("/{id}/check-email")
+    public boolean checkExistsEmailUpdate(@RequestParam("value") String value, @PathVariable Long id) {
+        if (userService.existsByEmail(value)) {
+//            This is my email
+            if (userService.findUserById(id).get().getEmail().equals(value)) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}/deleted/{deleted}")
     public ResponseEntity<?> deleteTempUser(@PathVariable Long id, @PathVariable boolean deleted) {
@@ -139,12 +140,12 @@ public class UserController {
     }
 
 
-//    @GetMapping()
-//    @PreAuthorize("hasRole('ADMIN')")
-//    public PageResult getUsersByPage(@PageableDefault(page = 0, size = 10, sort = "id") Pageable pageable) {
-//        Page<User> userPage = userService.findUsersByPage(pageable);
-//        return new PageResult(userPage);
-//    }
+    @GetMapping()
+    @PreAuthorize("hasRole('ADMIN')")
+    public PageResult getUsersByPage(@PageableDefault(page = 0, size = 10, sort = "id") Pageable pageable) {
+        Page<User> userPage = userService.findUsersByPage(pageable);
+        return new PageResult(userPage);
+    }
 
 //    @GetMapping("/deleted/{status}")
 //    @PreAuthorize("hasRole('ADMIN')")
@@ -153,40 +154,39 @@ public class UserController {
 //        return new PageResult(userPage);
 //    }
 
-//    @GetMapping("/search")
-//    public PageResult searchUsersByUsernameOrEmail(@RequestParam(value = "search-keyword") String info, @PageableDefault(page = 0, size = 10, sort = "id") Pageable pageable) {
-//        LOGGER.error("check search");
-//        Page<User> userPage = userService.findAllByUsernameContainsOrEmailContains(info, info, pageable);
-//        LOGGER.error(userPage.toString());
-//        return new PageResult(userPage);
-//    }
-//
-//    @PutMapping("/{id}")
-//    @PreAuthorize("hasRole('ADMIN')")
-//    public ResponseEntity<?> updateUser(@Valid @RequestBody UserUpdate userReq, @PathVariable Long id) {
-//        User userUpdate = userService.findUserById(id).get();
-//        if (userReq.getPassword() != null) {
-//            userUpdate.setPassword(passwordEncoder.encode(userReq.getPassword()));
-//        }
-//        userUpdate.setEmail(userReq.getEmail());
-//        Profile profile = userReq.getProfile();
-//        profile.setId(userUpdate.getProfile().getId());
-//        profile.setFirstName(userReq.getProfile().getFirstName());
-//        profile.setLastName(userReq.getProfile().getLastName());
-//        userUpdate.setProfile(profile);
-//        userService.updateUser(userUpdate);
-//        return ResponseEntity.ok().body(new ServiceResult(HttpStatus.OK.value(), "Cập nhật thành công!", userUpdate));
-//
-//    }
+    @GetMapping("/search")
+    public PageResult searchUsersByUsernameOrEmail(@RequestParam(value = "search-keyword") String info, @PageableDefault(page = 0, size = 10, sort = "id") Pageable pageable) {
+        LOGGER.error("check search");
+        Page<User> userPage = userService.findAllByUsernameContainsOrEmailContains(info, info, pageable);
+        LOGGER.error(userPage.toString());
+        return new PageResult(userPage);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateUser(@Valid @RequestBody UserUpdate userReq, @PathVariable Long id) {
+        User userUpdate = userService.findUserById(id).get();
+        if (userReq.getPassword() != null) {
+            userUpdate.setPassword(passwordEncoder.encode(userReq.getPassword()));
+        }
+        userUpdate.setEmail(userReq.getEmail());
+        Profile profile = userReq.getProfile();
+        profile.setId(userUpdate.getProfile().getId());
+        profile.setFirstName(userReq.getProfile().getFirstName());
+        profile.setLastName(userReq.getProfile().getLastName());
+        userUpdate.setProfile(profile);
+        userService.updateUser(userUpdate);
+        return ResponseEntity.ok().body(new ServiceResult(HttpStatus.OK.value(), "Cập nhật thành công!", userUpdate));
+    }
 
     @PostMapping()
-//    @PreAuthorize("hasRole('ADMIN')") //fix after test
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
-            user.setPassword("thanhtrinh");
 
 //        Check username is exists?
         if (userService.existsByUsername(user.getUsername())) {
             return ResponseEntity.badRequest().body(new ServiceResult(HttpStatus.CONFLICT.value(), "Tên đăng nhập đã có người sử dụng!", ""));
+
         }
 //        Check email is exists?
         if (userService.existsByEmail(user.getEmail())) {
@@ -225,9 +225,9 @@ public class UserController {
 //
 //        newUser.setRoles(roles);
         userService.createUser(user);
-        System.out.println(user.getPassword());
         return ResponseEntity.ok(new ServiceResult(HttpStatus.OK.value(), "User created successfully!", user));
     }
+
 
     @GetMapping("deleted/{status}/export/users.csv")
     public void exportUsersToCSV(HttpServletResponse response) throws Exception {
