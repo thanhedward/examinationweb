@@ -80,6 +80,17 @@
 			<version>31.1-jre</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.12.443</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.cloud.sql</groupId>
+			<artifactId>mysql-socket-factory</artifactId>
+			<version>1.10.0</version>
+		</dependency>
 
 
 	</dependencies>
@@ -96,6 +107,14 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<fork>false</fork>
 				</configuration>
 			</plugin>
 		</plugins>
