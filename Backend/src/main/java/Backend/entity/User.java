@@ -73,6 +73,13 @@ public class User implements Serializable {
         this.profile = profile;
     }
 
+    public User(String username, String email, Intake intake, Profile profile) {
+        this.username = username;
+        this.email = email;
+        this.profile = profile;
+        this.intake = intake;
+    }
+
     public User(boolean deleted) {
         this.deleted = deleted;
     }
@@ -82,6 +89,14 @@ public class User implements Serializable {
         this.password = password;
         this.email = email;
         this.profile = profile;
+    }
+
+    public User(String username, String password, String email, Intake intake, Profile profile) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.profile = profile;
+        this.intake = intake;
     }
 
     public User(String email, Profile profile) {
