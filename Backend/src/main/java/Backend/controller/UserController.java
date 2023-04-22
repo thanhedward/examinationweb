@@ -1,9 +1,11 @@
 package Backend.controller;
 
 import Backend.dto.*;
+import Backend.entity.Intake;
 import Backend.entity.Profile;
 import Backend.entity.Role;
 import Backend.entity.User;
+import Backend.service.IntakeService;
 import Backend.service.RoleService;
 import Backend.service.UserService;
 import Backend.utilities.ERole;
@@ -35,6 +37,8 @@ public class UserController {
     private UserService userService;
     private PasswordEncoder passwordEncoder;
     private RoleService roleService;
+
+    private IntakeService intakeService;
 //    private ExcelService excelService;
 //    FilesStorageService filesStorageService;
 
@@ -48,10 +52,11 @@ public class UserController {
 //    }
 
         @Autowired
-        public UserController(UserService userService, RoleService roleService, PasswordEncoder passwordEncoder) {
+        public UserController(UserService userService, RoleService roleService, PasswordEncoder passwordEncoder, IntakeService intakeService) {
         this.userService = userService;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
+        this.intakeService = intakeService;
     }
 
 
@@ -164,7 +169,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateUser(@Valid @RequestBody UserUpdate userReq, @PathVariable Long id) {
+        public ResponseEntity<?> updateUser(@Valid @RequestBody UserUpdate userReq, @PathVariable Long id) {
         User userUpdate = userService.findUserById(id).get();
         if (userReq.getPassword() != null) {
             userUpdate.setPassword(passwordEncoder.encode(userReq.getPassword()));
@@ -174,10 +179,13 @@ public class UserController {
         profile.setId(userUpdate.getProfile().getId());
         profile.setFirstName(userReq.getProfile().getFirstName());
         profile.setLastName(userReq.getProfile().getLastName());
+        Intake intakeInstance = intakeService.findByCode(userReq.getIntakeCode());
+        userUpdate.setIntake(intakeInstance);
         userUpdate.setProfile(profile);
         userService.updateUser(userUpdate);
         return ResponseEntity.ok().body(new ServiceResult(HttpStatus.OK.value(), "Cập nhật thành công!", userUpdate));
     }
+
 
     @PostMapping()
     @PreAuthorize("hasRole('ADMIN')")
@@ -227,6 +235,7 @@ public class UserController {
         userService.createUser(user);
         return ResponseEntity.ok(new ServiceResult(HttpStatus.OK.value(), "User created successfully!", user));
     }
+
 
 
     @GetMapping("deleted/{status}/export/users.csv")

@@ -13,4 +13,5 @@ public class UserUpdate {
     private String email;
     private String password;
     private Profile profile;
+    private String intakeCode;
 }
