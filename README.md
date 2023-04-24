@@ -3,4 +3,5 @@
 - Todo
   - Xóa tìm kiếm ở admin. 
 
-  - Thêm intake ở tạo tài khoản trong admin
+  - Fix bug multiple select and true false auto true when submit
+  
