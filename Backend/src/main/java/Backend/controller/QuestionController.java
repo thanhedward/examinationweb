@@ -132,6 +132,9 @@ public class QuestionController {
         question.setQuestionType(questionType1);
         question.setPart(part);
         question.setDeleted(false);
+        Optional<User> userOptional = userService.getUserByUsername(userService.getUserName());
+        question.setCreatedBy(userOptional.get());
+        question.setLastModifiedBy(userOptional.get());
         questionService.save(question);
         Question questionCreated = questionService.getQuestionById(question.getId()).get();
         log.info(questionCreated.toString());

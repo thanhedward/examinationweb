@@ -7,8 +7,14 @@ import Backend.repository.ExamRepository;
 import Backend.repository.ExamUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,11 +22,13 @@ import java.util.Optional;
 public class ExamUserServiceImpl implements ExamUserService {
     private ExamUserRepository examUserRepository;
     private ExamRepository examRepository;
+    private PlatformTransactionManager transactionManager;
 
     @Autowired
-    public ExamUserServiceImpl(ExamUserRepository examUserRepository, ExamRepository examRepository) {
+    public ExamUserServiceImpl(ExamUserRepository examUserRepository, ExamRepository examRepository, PlatformTransactionManager transactionManager) {
         this.examUserRepository = examUserRepository;
         this.examRepository = examRepository;
+        this.transactionManager = transactionManager;
     }
 
     @Override
@@ -75,5 +83,17 @@ public class ExamUserServiceImpl implements ExamUserService {
     @Override
     public List<ExamUser> findExamUsersByIsFinishedIsTrueAndExam_Id(Long examId) {
         return examUserRepository.findExamUsersByIsFinishedIsTrueAndExam_Id(examId);
+    }
+
+    @Override
+    public void updateTimeStart (Date timeStart, Long idExam){
+        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                // execute your update or delete query here
+                examUserRepository.updateTimeStart(timeStart, idExam);
+            }
+        });
     }
 }

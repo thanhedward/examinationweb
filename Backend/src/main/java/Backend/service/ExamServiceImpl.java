@@ -88,7 +88,7 @@ public class ExamServiceImpl implements ExamService {
                         choiceCorrect.setChoice(choice);
                         String choiceText = choiceService.findChoiceTextById(choice.getId());
                         Integer isRealCorrect;
-                        if (choice.getChoiceText().equals(choiceText)) {
+                        if (choice.getChoiceText().equals(choiceText) && choice.getIsCorrected() == 1) {
                             isRealCorrect = 1;
                             choiceList.setIsSelectedCorrected(true);
                         } else {

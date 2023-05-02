@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,6 +36,9 @@ import java.util.stream.Collectors;
 public class ExamController {
     Logger logger = LoggerFactory.getLogger(ExamController.class);
 
+    final String sql = "UPDATE exam_user SET exam_user.is_started=1, time_start=? WHERE exam_user.id=?";
+    private JdbcTemplate jdbcTemplate;
+
     private ExamService examService;
     private QuestionService questionService;
     private UserService userService;
@@ -44,7 +48,7 @@ public class ExamController {
     private ObjectMapper mapper;
 
     @Autowired
-    public ExamController(ExamService examService, QuestionService questionService, UserService userService, IntakeService intakeService, PartService partService, ExamUserService examUserService, ObjectMapper mapper) {
+    public ExamController(ExamService examService, QuestionService questionService, UserService userService, IntakeService intakeService, PartService partService, ExamUserService examUserService, ObjectMapper mapper, JdbcTemplate jdbcTemplate) {
         this.examService = examService;
         this.questionService = questionService;
         this.userService = userService;
@@ -52,6 +56,7 @@ public class ExamController {
         this.partService = partService;
         this.examUserService = examUserService;
         this.mapper = mapper;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
 //    @GetMapping(value = "/exams")
@@ -163,8 +168,8 @@ public class ExamController {
             examUser.setAnswerSheet(answerSheetConvertToJson);
             examQuestionList.setExam(exam.get());
             examUser.setIsStarted(true);
-            examUserService.update(examUser);
-
+            jdbcTemplate.update(sql, new Date(), examUser.getId());
+//            examUserService.update(examUser);
             List<Question> questions1 = new ArrayList<>();
             answerSheets.forEach(answerSheet1 -> {
                 Question question = questionService.getQuestionById(answerSheet1.getQuestionId()).get();
@@ -174,7 +179,8 @@ public class ExamController {
             });
             examQuestionList.setQuestions(questions1);
             examUser.setTimeStart(new Date());
-            examUserService.update(examUser);
+//            examUserService.update(examUser);
+            jdbcTemplate.update(sql, new Date(), examUser.getId());
             logger.error("case 2");
 
         } else {
@@ -187,12 +193,14 @@ public class ExamController {
 
             List<Question> questions = questionService.getQuestionPointList(examQuestionPoints);
             List<AnswerSheet> answerSheets = questionService.convertFromQuestionList(questions);
-//            Convert answer sheet to jsox`n
+//            Convert answer sheet to json
             String answerSheetConvertToJson = mapper.writeValueAsString(answerSheets);
             examUser.setAnswerSheet(answerSheetConvertToJson);
             examUser.setIsStarted(true);
             examUser.setTimeStart(new Date());
-            examUserService.update(examUser);
+//            examUserService.update(examUser);
+//            examUserService.updateTimeStart(new Date(), examUser.getId());
+            jdbcTemplate.update(sql, new Date(), examUser.getId());
             List<Question> questions1 = new ArrayList<>();
             answerSheets.forEach(answerSheet1 -> {
                 Question question = questionService.getQuestionById(answerSheet1.getQuestionId()).get();

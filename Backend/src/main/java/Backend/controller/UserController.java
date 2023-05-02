@@ -64,7 +64,7 @@ public class UserController {
     public ResponseEntity<?> getUser(@RequestParam String username) {
         Optional<User> user;
         if (username.isEmpty()) {
-            user = userService.getUserByUsername(userService.getUserName());
+            user = userService.getUserByUsername(userService.getUserName()  );
         } else {
             user = userService.getUserByUsername(username);
         }

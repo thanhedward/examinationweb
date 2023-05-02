@@ -55,7 +55,7 @@
                       <ng-container *ngIf="userChoice.choice.choiceText=='True' && userChoice.isRealCorrect==0">
                         <i class="fa fa-close text-red-600"></i>
                       </ng-container>
-                      <ng-container *ngIf="userChoice.choice.choiceText=='True' && userChoice.choice.isCorrected==1">
+                      <ng-container *ngIf="userChoice.choice.choiceText=='True' && userChoice.isRealCorrect==1">
                         <i class="fa fa-check text-green-600"></i>
                     </ng-container>
                       </span>
@@ -71,10 +71,10 @@
 
                   <div class="radio-type flex-1 flex items-center">
                     <span class="text-2xl pr-2 w-8">
-                      <ng-container *ngIf="userChoice.choice.choiceText=='False' && userChoice.isRealCorrect==1">
+                      <ng-container *ngIf="userChoice.choice.choiceText=='False' && userChoice.isRealCorrect==0">
                         <i class="fa fa-close text-red-600"></i>
                       </ng-container>
-                      <ng-container *ngIf="userChoice.choice.choiceText=='False' && userChoice.isRealCorrect==0">
+                      <ng-container *ngIf="userChoice.choice.choiceText=='False' && userChoice.isRealCorrect==1">
                         <i class="fa fa-check text-green-600"></i>
                     </ng-container>
                       </span>
