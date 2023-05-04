@@ -49,7 +49,7 @@ export class HomeComponent implements OnInit {
     if (this.username) {
       this.isLoggedIn = true;
       if (user?.roles.includes(UserRole.ROLE_ADMIN)) {
-        this.defaultUrl = '../admin';
+        this.defaultUrl = '../admin/users';
       }
       if (user?.roles.includes(UserRole.ROLE_LECTURE)) {
         this.defaultUrl = '../admin';

@@ -34,11 +34,11 @@
                 (click)="toggleTabs(1)"
                 [ngClass]="{'text-blue-600 bg-white': openTab !== 1, 'text-white bg-blue-600': openTab === 1}"> <i
                 class="fa fa-user-circle text-base mr-1"></i> Profile </a></li>
-              <li class="-mb-px mr-2 last:mr-0 flex-auto text-center"><a
+              <!-- <li class="-mb-px mr-2 last:mr-0 flex-auto text-center"><a
                 class="text-xs font-bold uppercase px-5 py-3 hover:shadow-md rounded block leading-normal cursor-pointer"
                 (click)="toggleTabs(2)"
                 [ngClass]="{'text-blue-600 bg-white': openTab !== 2, 'text-white bg-blue-600': openTab === 2}"> <i
-                class="fa fa-upload mr-1"></i> Import </a></li>
+                class="fa fa-upload mr-1"></i> Import </a></li> -->
 
             </ul>
             <div class="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 rounded">
@@ -181,8 +181,11 @@
 
 
                     </div>
+
+
                   </div>
-                  <div [ngClass]="{'hidden': openTab !== 2, 'block': openTab === 2}">
+
+                  <!-- <div [ngClass]="{'hidden': openTab !== 2, 'block': openTab === 2}">
 
                     <div class="-mx-3 md:flex flex-col mb-2 w-full">
                       <div class="md:w-full px-3">
@@ -206,7 +209,9 @@
                         {{user.username}}
                       </div>
                     </ng-container>
-                  </div>
+                  </div> -->
+
+
                 </div>
               </div>
             </div>

@@ -2,10 +2,15 @@ package Backend.controller;
 
 import Backend.config.JwtUtils;
 import Backend.dto.LoginUser;
+import Backend.dto.OperationStatusDto;
+import Backend.dto.PasswordResetDto;
+import Backend.dto.PasswordResetRequest;
 import Backend.entity.User;
 import Backend.payload.JwtResponse;
 import Backend.service.UserDetailsImpl;
 import Backend.service.UserService;
+import Backend.utilities.RequestOperationName;
+import Backend.utilities.RequestOperationStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -86,5 +92,32 @@ public class AuthenticationController {
 //    roles.add("ROLE_STUDENT");
 //    roles.add("ROLE_LECTURER");
 //    return ResponseEntity.ok(new JwtResponse("234l2ioj45", 35123441L, "thanhtam28ss", "ngocthanh123@gmail.com", roles));
+  }
+
+
+  @PostMapping(value = "/password-reset-request")
+  public OperationStatusDto resetPasswordRequest(@RequestBody PasswordResetRequest passwordResetRequest) throws MessagingException {
+    OperationStatusDto operationStatusDto = new OperationStatusDto();
+    boolean operationResult = userService.requestPasswordReset(passwordResetRequest.getEmail());
+    operationStatusDto.setOperationName(RequestOperationName.REQUEST_PASSWORD_RESET.name());
+    operationStatusDto.setOperationResult(RequestOperationStatus.ERROR.name());
+    if (operationResult) {
+      operationStatusDto.setOperationResult(RequestOperationStatus.SUCCESS.name());
+
+    }
+
+    return operationStatusDto;
+  }
+
+  @PostMapping(value = "/password-reset")
+  public OperationStatusDto resetPassword(@RequestBody PasswordResetDto passwordResetDto) {
+    OperationStatusDto operationStatusDto = new OperationStatusDto();
+    boolean operationResult = userService.resetPassword(passwordResetDto.getToken(), passwordResetDto.getPassword());
+    operationStatusDto.setOperationResult(RequestOperationStatus.ERROR.name());
+    operationStatusDto.setOperationName(RequestOperationName.PASSWORD_RESET.name());
+    if (operationResult) {
+      operationStatusDto.setOperationResult(RequestOperationStatus.SUCCESS.name());
+    }
+    return operationStatusDto;
   }
 }

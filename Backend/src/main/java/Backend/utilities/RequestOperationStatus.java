@@ -1,2 +1,5 @@
-package Backend.utilities;public class RequestOperationStatus {
+package Backend.utilities;
+
+public enum RequestOperationStatus {
+    ERROR, SUCCESS
 }

@@ -13,18 +13,18 @@ import java.util.Properties;
 @Service()
 public class MailServiceImpl implements EmailService {
 //    @Value("${spring.mail.username}")
-    String username;
+    String username = "tuan1593575445@gmail.com";
 //    @Value("${spring.mail.password}")
-    String password;
+    String password = "wpcnxhxeixrirlbj";
 
 //    @Value("${isc.homepage}")
-    String clientHomeUrl;
+    String clientHomeUrl = "http://localhost:4200";
 
     private String PASSWORD_RESET_SUBJECT = "Password reset request";
     private String PASSWORD_RESET_BODY = "<h1>Một yêu cầu reset password được gửi từ bạn</h1>" +
             "<p>Chào bạn, " +
-            "một ai đó đã yêu cầu một mật khẩu mới với tài khoản của bạn. Nếu đó là hành động của bạn, vui lòng bấm vào link phía dưới để lấy mật khẩu mới." +
-            "<br/><a href='$clientPage/verification-service/password-reset?token=$tokenValue'>Click vào đây</a><br/><br/>" +
+            "một ai đó đã yêu cầu một mật khẩu mới với tài khoản của bạn. Nếu đó là hành động của bạn, vui lòng vào link phía dưới để lấy mật khẩu mới." +
+            "<br/><a href='$clientPage/verification-service/password-reset?token=$tokenValue'>Link</a><br/><br/>" +
             "Cảm ơn.";
 
     @Override
@@ -45,7 +45,7 @@ public class MailServiceImpl implements EmailService {
 
         Message message = new MimeMessage(session);
         message.setFrom(new InternetAddress(username, false));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("tamht298@gmail.com"));
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("tuan1593575445@gmail.com"));
         message.setSubject(email.getFromAddress() + " - " + email.getSubject());
         message.setContent(email.getBody(), "text/html");
         message.setSentDate(new Date());
